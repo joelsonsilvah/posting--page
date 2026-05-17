@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Posting Page</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      background-color: #f0f2f5;
+      color: #1c1e21;
+    }
+
+    /* ===== HEADER / NAV ===== */
+    header {
+      background-color: #1877f2;
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      height: 56px;
+      gap: 1rem;
+    }
+
+    .nav-logo {
+      color: #fff;
+      font-size: 1.6rem;
+      font-weight: 800;
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+
+    .nav-logo span {
+      color: #cfe2ff;
+      font-size: 1rem;
+      font-weight: 400;
+      margin-left: 6px;
+    }
+
+    /* ===== MAIN ===== */
+    main {
+      max-width: 680px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* ===== FORM CARD ===== */
+    section#criar-post {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    }
+
+    section#criar-post h2 {
+      font-size: 1.1rem;
+      margin-bottom: 1.2rem;
+      color: #1877f2;
+      border-bottom: 2px solid #e4e6eb;
+      padding-bottom: 0.6rem;
+    }
+
+    form#form-post {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #606770;
+    }
+
+    .form-group input[type="text"],
+    .form-group textarea {
+      border: 1.5px solid #ccd0d5;
+      border-radius: 8px;
+      padding: 0.7rem 1rem;
+      font-size: 1rem;
+      font-family: system-ui, sans-serif;
+      color: #1c1e21;
+      background: #f7f8fa;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      resize: vertical;
+      outline: none;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group textarea:focus {
+      border-color: #1877f2;
+      box-shadow: 0 0 0 3px rgba(24,119,242,0.15);
+      background: #fff;
+    }
+
+    .form-group textarea {
+      min-height: 110px;
+    }
+
+    button[type="submit"] {
+      align-self: flex-end;
+      background-color: #1877f2;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.65rem 2rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.25s, transform 0.15s;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #145dbf;
+      transform: scale(1.03);
+    }
+
+    button[type="submit"]:active {
+      transform: scale(0.98);
+    }
+
+    /* ===== LOADING ===== */
+    #loading {
+      display: none;
+      text-align: center;
+      color: #1877f2;
+      font-size: 0.95rem;
+      padding: 0.5rem 0;
+    }
+
+    /* ===== POST RENDERIZADO ===== */
+    section#post-renderizado {
+      display: none;
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .post-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1877f2, #42b72a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .post-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .post-meta strong {
+      font-size: 0.95rem;
+      color: #1c1e21;
+    }
+
+    .post-meta span {
+      font-size: 0.78rem;
+      color: #8a8d91;
+    }
+
+    .post-badge {
+      margin-left: auto;
+      background: #e7f3ff;
+      color: #1877f2;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    h2#renderizador-titulo {
+      font-size: 1.15rem;
+      color: #1c1e21;
+      margin-bottom: 0.6rem;
+    }
+
+    p#renderizador-conteudo {
+      font-size: 0.97rem;
+      color: #444;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    .post-footer {
+      border-top: 1px solid #e4e6eb;
+      padding-top: 0.8rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .post-action {
+      background: none;
+      border: none;
+      color: #606770;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background 0.2s, color 0.2s;
+      font-family: system-ui, sans-serif;
+    }
+
+    .post-action:hover {
+      background: #f0f2f5;
+      color: #1877f2;
+    }
+
+    /* ===== ERRO ===== */
+    #mensagem-erro {
+      display: none;
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      color: #856404;
+      font-size: 0.9rem;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #8a8d91;
+      font-size: 0.82rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <nav>
+      <a href="#" class="nav-logo">PostingPage <span>— Simulador de Posts</span></a>
+    </nav>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- FORMULÁRIO -->
+    <section id="criar-post">
+      <h2>✏️ Criar novo post</h2>
+
+      <form id="form-post" novalidate>
+
+        <div class="form-group">
+          <label for="input-titulo">Título do post</label>
+          <input
+            type="text"
+            id="input-titulo"
+            name="titulo"
+            placeholder="Ex: Minha viagem para Lisboa..."
+            required
+            aria-label="Título do post"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="input-conteudo">Conteúdo</label>
+          <textarea
+            id="input-conteudo"
+            name="conteudo"
+            placeholder="O que você está pensando?"
+            required
+            aria-label="Conteúdo do post"
+          ></textarea>
+        </div>
+
+        <button type="submit" aria-label="Publicar post">
+          Publicar
+        </button>
+
+      </form>
+
+      <p id="loading">⏳ Publicando seu post...</p>
+      <div id="mensagem-erro"></div>
+    </section>
+
+    <!-- SAÍDA / RENDERIZAÇÃO DO POST -->
+    <section id="post-renderizado" aria-live="polite">
+
+      <div class="post-header">
+        <div class="post-avatar" aria-hidden="true">U</div>
+        <div class="post-meta">
+          <strong>Usuário #1</strong>
+          <span id="post-timestamp">agora mesmo</span>
+        </div>
+        <span class="post-badge">✅ Publicado</span>
+      </div>
+
+      <h2 id="renderizador-titulo"></h2>
+      <p id="renderizador-conteudo"></p>
+
+      <div class="post-footer">
+        <button class="post-action" aria-label="Curtir post">👍 Curtir</button>
+        <button class="post-action" aria-label="Comentar post">💬 Comentar</button>
+        <button class="post-action" aria-label="Compartilhar post">↗️ Compartilhar</button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>PostingPage © 2025 — Projeto Front-End com Fetch API</p>
+  </footer>
+
+  <!-- JAVASCRIPT -->
+  <script>
+    // ===== SELETORES =====
+    const formPost             = document.querySelector('#form-post')
+    const titulo               = document.querySelector('#input-titulo')
+    const conteudo             = document.querySelector('#input-conteudo')
+    const renderizadorTitulo   = document.querySelector('#renderizador-titulo')
+    const renderizadorConteudo = document.querySelector('#renderizador-conteudo')
+    const postRenderizado      = document.querySelector('#post-renderizado')
+    const loading              = document.querySelector('#loading')
+    const mensagemErro         = document.querySelector('#mensagem-erro')
+    const postTimestamp        = document.querySelector('#post-timestamp')
+
+    // ===== EVENTO DE SUBMIT =====
+    formPost.addEventListener('submit', (e) => {
+      e.preventDefault()
+
+      // Validação simples
+      if (!titulo.value.trim() || !conteudo.value.trim()) {
+        mensagemErro.style.display = 'block'
+        mensagemErro.textContent = '⚠️ Por favor, preencha o título e o conteúdo antes de publicar.'
+        return
+      }
+
+      mensagemErro.style.display = 'none'
+      loading.style.display = 'block'
+      postRenderizado.style.display = 'none'
+
+      // ===== OBJETO DO POST =====
+      const data = {
+        title: titulo.value,
+        body: conteudo.value,
+        userId: 1
+      }
+
+      // ===== FETCH POST =====
+      fetch('https://jsonplaceholder.typicode.com/posts', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8'
+        }
+      })
+        .then((response) => response.json())
+        .then((json) => {
+          loading.style.display = 'none'
+
+          // ===== RENDERIZAÇÃO =====
+          renderizadorTitulo.innerHTML   = data.title
+          renderizadorConteudo.innerHTML = data.body
+
+          // Timestamp simulado
+          const agora = new Date()
+          postTimestamp.textContent = agora.toLocaleString('pt-BR', {
+            day: '2-digit', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+          })
+
+          postRenderizado.style.display = 'block'
+
+          // Limpa o formulário
+          formPost.reset()
+
+          // Scroll suave até o post
+          postRenderizado.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+          console.log('Post criado com sucesso! Resposta da API:', json)
+        })
+        .catch((error) => {
+          loading.style.display = 'none'
+          mensagemErro.style.display = 'block'
+          mensagemErro.textContent = '❌ Erro ao publicar. Verifique sua conexão e tente novamente.'
+          console.error('Erro no fetch:', error)
+        })
+    })
+  </script>
+
+</body>
+</html>
